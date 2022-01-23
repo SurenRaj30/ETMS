@@ -123,7 +123,6 @@ Route::group(['prefix'=>'provider', 'middleware'=>'auth:s_provider'], function()
     Route::get('edit/{id}', [ServiceController::class, 'edit'])
     ->name('editService');
 
-    //no page yet
     Route::post('update/{id}', [ServiceController::class, 'update'])
     ->name('updateService');
 

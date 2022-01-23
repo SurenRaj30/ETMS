@@ -12,6 +12,21 @@
   }
   
 </style>
+
+@if (session()->has('success'))
+    <div class="container">
+        <div class="alert alert-success">
+        {{session()->get('success')}}
+        </div>
+    </div>
+@elseif(session()->has('failed'))
+    <div class="container">
+        <div class="alert alert-danger">
+            {{session()->get('failed')}}
+        </div>
+    </div>
+@endif
+
 @if ($route == 'regServiceShow')
 <div class="container">
     <div class="row justify-content-center">
@@ -19,6 +34,7 @@
             <div class="card">
                 <div class="card-header bg-dark text-light">
                     Service Details
+                    <a href="{{url('provider/edit/'.$service->s_id)}}"><button type="button" class="btn btn-success btn-sm float-right">Update</button></a>
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
@@ -34,44 +50,57 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Max Tourist') }}</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" value="{{$service->maxTourist}}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-group row">
                         <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Price') }}</label>
                         <div class="col-md-6">
-                            <input type="text" class="form-control" value="{{$service->s_price}}" readonly>
+                            <input type="number" class="form-control" value="{{$service->s_price}}" readonly>
                         </div>
                     </div>
+                    
                     <div class="form-group row">
                         <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
                         <div class="col-md-6">
-                            <textarea name="s_address" cols="30" rows="10">{{$service->s_address}}</textarea>
+                            <textarea name="s_address" cols="30" rows="5" readonly>{{$service->s_address}}</textarea>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Overview') }}</label>
-                        <div class="col-md-6">
-                        <textarea name="overview" cols="30" rows="10" class="form-control" name="s_overview">{{$service->s_overview}}</textarea>
+                   
+                </div>
+
+                <div class="card mt-3" id="card-info">
+                    <div class="card-header bg-dark text-light">
+                        Service Duration
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Set service start time') }}</label>
+                            <div class="col-md-6">
+                                  <input type="time" name="start_time" class="form-control" value="{{$service->start_time}}" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Set service end time') }}</label>
+                            <div class="col-md-6">
+                                  <input type="time" name="end_time" class="form-control" value="{{$service->end_time}}" readonly>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- <div class="card">
+                <div class="card mt-3" id="card-info">
                     <div class="card-header bg-dark text-light">
-                        Service Schedule
+                        Service Description
                     </div>
                     <div class="card-body">
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
-                            <div class="col-md-6">
-                                <input type="text">
-                            </div>
+                        <div class="form-group">
+                                <div>
+                                   <textarea class="form-control" name="s_overview" readonly>{{$service->s_overview}}</textarea>
+    
+                                   @if($errors->has('overview'))
+                                   <span class="text-danger">{{ $errors->first('overview') }}</span>
+                               @endif
+                                </div>
                         </div>
                     </div>
-                </div> --}}
+                </div>
                 {{-- Gallery --}}
 
                 <div class="card">
@@ -115,133 +144,109 @@
 @elseif($route == 'editService')
 
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <form action="{{url('provider/update/'.$service->s_id)}}" method="POST">
+        @csrf
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-dark text-light">
+                        Service Details
+                    </div>
+                    <div class="card-body">
+                            <div class="form-group row">
+                                <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Service Category') }}</label>
+                                <div class="col-md-6">
+                                    <select name="s_category" class="form-select form-control" aria-label=".form-select-lg example">
+                                        <option selected>{{$service->s_category}}</option>
+                                        <option  value="Homestay/Accomodation">Homestay</option>
+                                        <option  value="Tourism Service">Tourism Service</option>
+                                      </select>
+                                </div>
+                            </div>
+    
+                            <div class="form-group row">
+                                <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Service Name') }}</label>
+                                <div class="col-md-6">
+                                    <input 
+                                    id="serviceName" 
+                                    type="text" 
+                                    class="form-control"
+                                    name="s_name" 
+                                    placeholder="{{$service->s_name}}" 
+                                    required autocomplete="serviceName" 
+                                    autofocus aria-required="true">
+    
+                                @if($errors->has('s_name'))
+                                    <span class="text-danger">{{ $errors->first('s_name') }}</span>
+                                @endif
+                                </div>
+                            </div>
+    
+                            
+                            <div class="form-group row">
+                                <label for="date" class="col-md-4 col-form-label text-md-right">{{ __('Price') }}</label>
+                                <div class="col-md-6">
+                                    <input 
+                                    id="price" 
+                                    type="number" 
+                                    class="form-control" 
+                                    name="s_price" 
+                                    placeholder="{{$service->s_price}}"
+                                    required autocomplete="price" 
+                                    autofocus aria-required="true">
+    
+                                    @if($errors->has('price'))
+                                    <span class="text-danger">{{ $errors->first('price') }}</span>
+                                @endif
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
+                                <div class="col-md-6">
+                                    <textarea name="s_address" cols="30" rows="10">{{$service->s_address}}</textarea>
+                                </div>
+                            </div>
+                            
+                    </div>
+                </div>
+    
+            <div class="card">
+                    <div class="card-header bg-dark text-light">
+                        Upload Photos
+                    </div>
+               
+                <div class="card-body" id="imageCard">
+                    <div class="user-image mb-3 text-center">
+                        <div class="imgPreview"></div>
+                    </div>            
+        
+                    <div class="custom-file">
+                        <input type="file" name="imageFile[]" class="custom-file-input" id="images">
+                        <label class="custom-file-label" for="images">Choose image</label>
+                    </div>
+    
+                </div>
+                
+            </div>
             <div class="card">
                 <div class="card-header bg-dark text-light">
-                    Service Details
+                    Overview
                 </div>
                 <div class="card-body">
-                    <form action="{{url('provider/update/'.$service->s_id)}}" method="POST" enctype="multipart/form-data">
-                        @csrf
-
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Service Type') }}</label>
-                            <div class="col-md-6">
-                                <select name="s_type" class="form-select form-control" aria-label=".form-select-lg example">
-                                    <option selected>{{$service->s_type}}</option>
-                                    <option  value="Homestay/Accomodation">Homestay</option>
-                                    <option  value="Tourism Service">Tourism Service</option>
-                                  </select>
-                            </div>
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                        <textarea name="overview" cols="30" rows="10" class="form-control" name="s_overview">{{$service->s_overview}}</textarea>
                         </div>
-
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Service Name') }}</label>
-                            <div class="col-md-6">
-                                <input 
-                                id="serviceName" 
-                                type="text" 
-                                class="form-control"
-                                name="s_name" 
-                                value="{{$service->s_name}}" 
-                                required autocomplete="serviceName" 
-                                autofocus aria-required="true">
-
-                            @if($errors->has('s_name'))
-                                <span class="text-danger">{{ $errors->first('s_name') }}</span>
-                            @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Max Tourist') }}</label>
-                            <div class="col-md-6">
-                                <input 
-                                id="maxTourist" 
-                                type="number"
-                                min="1" 
-                                class="form-control"
-                                name="maxTourist" 
-                                value="{{$service->maxTourist}}" 
-                                required autocomplete="maxTourist" 
-                                autofocus aria-required="true">
-
-                                @if($errors->has('maxTourist'))
-                                <span class="text-danger">{{ $errors->first('maxTourist') }}</span>
-                            @endif
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="date" class="col-md-4 col-form-label text-md-right">{{ __('Price Description') }}</label>
-                            <div class="col-md-6">
-                                <input 
-                                id="price" 
-                                type="price" 
-                                class="form-control" 
-                                name="s_price" 
-                                value="{{$service->price}}" 
-                                required autocomplete="price" 
-                                autofocus aria-required="true">
-
-                                @if($errors->has('price'))
-                                <span class="text-danger">{{ $errors->first('price') }}</span>
-                            @endif
-                            </div>
-                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
                 </div>
             </div>
-
-            
-        <div class="card">
-                <div class="card-header bg-dark text-light">
-                    Upload Photos
-                </div>
-           
-            <div class="card-body" id="imageCard">
-                <div class="user-image mb-3 text-center">
-                    <div class="imgPreview"> </div>
-                </div>            
-    
-                <div class="custom-file">
-                    <input type="file" name="imageFile[]" class="custom-file-input" id="images">
-                    <label class="custom-file-label" for="images">Choose image</label>
-                </div>
-
             </div>
-            
-        </div>
-        <div class="card">
-            <div class="card-header bg-dark text-light">
-                Overview
-            </div>
-            <div class="card-body">
-                <label for="name" class>{{ __('Overview') }}</label>
-                <div class="form-group">
-                        <div>
-                           <textarea class="form-control" name="s_overview">{{$service->s_overview}}</textarea>
-
-                           @if($errors->has('overview'))
-                           <span class="text-danger">{{ $errors->first('overview') }}</span>
-                       @endif
-                        </div>
-
-                       <button class="btn btn-primary btn-lg mt-3">Submit</button>
-                </div>
-
             </div>
         </div>
-        </div>
-        </form>
-        </div>
-    </div>
+    </form>
 </div>
 
-<script src="{{asset('ckeditor/ckeditor.js')}}"></script>
-
-<script>
-    CKEDITOR.replace('s_overview');
-</script>
 
 <!-- jQuery -->
 

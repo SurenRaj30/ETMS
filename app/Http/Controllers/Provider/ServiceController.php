@@ -151,18 +151,16 @@ class ServiceController extends Controller
     {
         
         $request->validate([
-            's_type'=>'required',
+            's_category'=>'required',
             's_name'=>'required|unique:services',
-            'maxTourist'=>'required',
             's_price'=>'required',
             's_overview'=>'required',
         ]);
 
        $update = Service::find($s_id);
 
-        $update->s_type = $request->s_type;
+        $update->s_category = $request->s_category;
         $update->s_name = $request->s_name;
-        $update->maxTourist = $request->maxTourist;
         $update->s_price = $request->s_price;
         $update->s_overview = $request->s_overview;
 
@@ -170,8 +168,8 @@ class ServiceController extends Controller
 
         if($save)
         {
-            return redirect()->route('serviceList')
-            ->with('success', 'Service details edited successfully');
+            return redirect()->route('regServiceShow')
+            ->with('success', 'Service details updated successfully');
         }else{
             return back()->with('failed', 'Something went wrong. Please try again');
         }
@@ -187,10 +185,8 @@ class ServiceController extends Controller
     public function destroy($s_id)
     {
         $delete = Service::where('s_id', $s_id)->firstorfail()->delete();
-        return redirect()->route('serviceList')->with('success', 'Record deleted');
+        return redirect()->route('serviceList')->with('deleted', 'Record deleted');
     }
-
-    //service rating
 
     
 }

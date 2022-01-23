@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    #card-info{
-        background: #81D4FA;
-    }
-</style>
+
 <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
 @if(session()->has('failed'))
 <div class="container">

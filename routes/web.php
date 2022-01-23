@@ -52,10 +52,10 @@ Route::group(['prefix'=>'tourist', 'middleware'=>'auth'], function(){
     Route::get('/view/{id}', [BookingController::class, 'view']);
     Route::post('/createBooking', [BookingController::class, 'create'])
     ->name('createBooking');
+
+    Route::get('viewBooking/{id}', [TouristController::class, 'viewBooking']);
     Route::get('list', [TouristController::class, 'bookList'])->name('users.index');
     Route::post('rating', [BookingController::class, 'rating'])->name('rating');
-
-    Route::post('search', [TouristController::class, 'search']);
 
 });
 
@@ -68,11 +68,14 @@ Route::group(['prefix'=>'admin', 'middleware'=>'auth'], function(){
     //approve provider
     Route::get('/pendingList', [AdminController::class, 'pendingList'])->name('pendingList');
     Route::get('/approve/{id}', [AdminController::class, 'approve']);
+    Route::get('/reject/{id}', [AdminController::class, 'rejectForm']);
+    Route::post('/reject/{id}', [AdminController::class, 'processReject']);
     Route::get('/viewProvider/{id}', [AdminController::class, 'view']);
 
     //approve service
     Route::get('/pendingService', [AdminController::class, 'pendingService'])->name('pendingService');
     Route::get('/approveService/{id}', [AdminController::class, 'approveService']);
+    Route::get('/viewService/{id}', [AdminController::class, 'viewService']);
     Route::get('/rejectService/{id}', [AdminController::class, 'showRejectForm']);
     Route::post('/processReject/{id}', [AdminController::class, 'processRejectForm']);
 });
@@ -133,6 +136,8 @@ Route::group(['prefix'=>'provider', 'middleware'=>'auth:s_provider'], function()
     Route::get('bookList', [ProviderController::class, 'bookList'])->name('bookList');
     Route::get('viewBooking/{id}', [ProviderController::class, 'viewBooking']);
     Route::post('accept/{id}', [ProviderController::class, 'accept']);
+    //reject booking
+    Route::get('rejectBooking/{id}', [ProviderController::class, 'rejectBooking']);
 
 });
 

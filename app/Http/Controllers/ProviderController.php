@@ -20,25 +20,9 @@ use Auth;
 class ProviderController extends Controller
 {
    
-    //manage Booking
-
-    public function search(Request $request)
-    {
-        $search = $request->input('search');
-
-        $posts = Booking::query()
-        ->where('s_name', 'LIKE', "%{$search}%")
-        ->get();
-        
-        return view('provider.searchBooking', compact('posts'));
-    }
-
     public function bookList(Request $request)
     {
-        // $id = Auth()->user()->id;
-        // $booking =Booking::select('bookings.*')->where('provider_id', $id)->paginate(8);
-        // return view('provider.manageBooking.bookList', compact('booking'));
-
+       
         if ($request->ajax()) {
 
             $id = Auth()->user()->id;
@@ -48,10 +32,12 @@ class ProviderController extends Controller
 
                     ->addIndexColumn()
                     ->editColumn('status', function($data){
-                        if($data->status==2){
+                        if($data->status==1){
                             return ' <button class="btn btn-success btn-sm">Accepted</button>';
-                        }elseif($data->status==1){
+                        }elseif($data->status==2){
                             return' <button class="btn btn-secondary btn-sm">Pending</button>';
+                        }elseif($data->status==3){
+                            return' <button class="btn btn-secondary btn-sm">Rejected</button>';
                         }
                     })
                     ->addColumn('action', function($row){
@@ -68,29 +54,30 @@ class ProviderController extends Controller
 
     public function viewBooking(Request $request, $id)
     {
-        $booking = Booking::find($id);
-        return view ('provider.manageBooking.viewBooking', compact('booking'));
+        $booking = Booking::join('users', 'bookings.tourist_id', '=', 'users.id')
+        ->find($id);
+
+        $book_id = Booking::select('id')->where('id', $id)->first();
+       
+        return view ('provider.manageBooking.viewBooking', compact('booking', 'book_id'));
     }
 
     public function accept(Request $request, $id)
     {
 
-        $user_id = Auth()->user()->id;
-        $booking = Booking::find($id);
-        //dd($booking);
+        $booking = Booking::join('users', 'bookings.tourist_id', '=', 'users.id')
+        ->find($id);
+        
         $tourist = User::find($booking->tourist_id);
-
-        //dd($tourist);
 
         $booking->status=2;
         
-        //$request->user()->notify(new OrderProcessed($booking));
         $save=$booking->save();
         
         if($save){            
             $details = [
 
-            'greeting' => 'Good Day Provider',
+            'greeting' => 'Good Day Tourist',
 
             'body' => 'Booking for '.$booking->s_name.' have been approved',
 
@@ -111,6 +98,17 @@ class ProviderController extends Controller
             
     }
 
+    public function rejectBooking($id)
+    {
+        $booking = Booking::find($id);
+        return view ('provider.manageBooking.rejectBookingForm', compact('booking'));
+    }
+
+    public function processRejectBooking(Request $request, $id)
+    {
+        
+    }
+
     //manage dashboard
 
     public function index(){
@@ -118,10 +116,10 @@ class ProviderController extends Controller
         $id = Auth::user()->id;
 
         $serviceRate = Service::all()->where('user_id', $id);
-        $pl_service = tempService::select('status', 'ts_name')->where(['user_id' => $id, 'status' => 0])->get();
+        $pl_service = tempService::select('status', 'ts_name')->where(['user_id' => $id, 'status' => 2])->get();
         
         $reg_service = DB::table('services')->where('user_id', $id)->count();
-        $p_service = DB::table('temp_services')->select('status')->where(['status' => 0, 'user_id' => $id])->count();
+        $p_service = DB::table('temp_services')->select('status')->where(['status' => 2, 'user_id' => $id])->count();
         $booking = DB::table('bookings')->where('provider_id', $id)->count();
 
         return view('provider.dashboard', compact('serviceRate', 'reg_service', 'p_service', 'booking', 'pl_service'));

@@ -130,7 +130,7 @@ class RegisterController extends Controller
         $provider->swa=$request->swa;
 
         //intial approval status
-        $provider->status = false;
+        $provider->status = 2;
 
         $provider->save();
         return redirect('login/s_provider')->with('success', 'Your registration was successful and do wait for admin approval');

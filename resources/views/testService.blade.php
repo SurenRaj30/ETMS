@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>Laravel 5.8 Datatables Tutorial - ItSolutionStuff.com</title>
+    <title>ETMS</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 

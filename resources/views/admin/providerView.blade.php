@@ -2,11 +2,6 @@
 
 @section('content')
 
-<style>
-    #card-info{
-        background: #81D4FA;
-    }
-</style>
 
 <div class="container">
     <div class="row justify-content-center">
@@ -166,8 +161,8 @@
                               </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn mt-3">Approve</button>
-                    <button class="btn btn-danger btn mt-3">Reject</button>
+                    <a href="/admin/approve/{{$user->id}}"><button class="btn btn-primary btn mt-3">Approve</button></a>
+                    <a href="/admin/reject/{{$user->id}}"><button class="btn btn-danger btn mt-3">Reject</button></a>
                 </div>
             </div>
             {{-- <div class="card mt-3">

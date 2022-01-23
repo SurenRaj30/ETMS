@@ -119,7 +119,7 @@
                         @foreach ($pl_service as $data)
                         <tr>
                             <td>{{$data->ts_name}}</td>
-                            @if ($data->status==0)
+                            @if ($data->status==2)
                                 <td style="text-align:center;">Pending</td>
                             @else
                             <td style="text-align:center;">Rejected</td>

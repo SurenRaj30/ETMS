@@ -80,7 +80,7 @@ class ServiceController extends Controller
         $service->ts_price = $request->s_price;
         $service->ts_address = $request->s_address;
         $service->ts_overview = $request->s_overview;
-        $service->status = false;
+        $service->status = 2;
         $service ->user_id = Auth::guard('s_provider')->id();
 
         $service->start_time = $request->start_time;
@@ -106,7 +106,7 @@ class ServiceController extends Controller
     $save=$service->save();
     
         if($save){
-            return redirect()->route('provider.dashboard')
+            return redirect('/provider/serviceList')
             ->with('message', 'Service registered successfully for admin approval');
         }else{
             return redirect()->back()

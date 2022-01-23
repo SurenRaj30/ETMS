@@ -3,7 +3,7 @@
 
 <head>
 
-    <title>Laravel 5.8 Datatables Tutorial - ItSolutionStuff.com</title>
+    <title>ETMS</title>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -25,7 +25,17 @@
 <body>
 
     
-
+<div class="container">
+    @if(session()->has('reject'))
+    <div class="alert alert-danger">
+        {{ session()->get('reject') }}
+    </div>
+    @elseif(session()->has('success'))
+    <div class="alert alert-success">
+        {{ session()->get('success') }}
+    </div>
+@endif
+</div>
 <div class="container mt-5">
 
     <table class="table table-bordered data-table shadow">
@@ -44,7 +54,7 @@
 
                 <th style="width:5px;">Status</th>
 
-                <th style="width:200px;">Action</th>
+                <th style="width:110px;">Action</th>
                
             </tr>
 

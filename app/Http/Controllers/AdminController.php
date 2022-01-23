@@ -12,6 +12,7 @@ use Notification;
 use App\Notifications\AccountNotification;
 use App\Notifications\ServiceNotification;
 use App\Notifications\RejectServiceNotification;
+use App\Notifications\RejectAccountNotification;
 use DataTables;
 use Hash;
 use DB;
@@ -25,8 +26,8 @@ class AdminController extends Controller
         $t_service = tempService::select('*')->where('status', 1)->count();
 
         //total number of pending providers and services
-        $pt_provider = tempProvider::select('*')->where('status', 0)->count();
-        $pt_service = tempService::select('*')->where('status', 0)->count();
+        $pt_provider = tempProvider::select('*')->where('status', 2)->count();
+        $pt_service = tempService::select('*')->where('status', 2)->count();
 
         //services with rating
         $rating = Provider::join('services', 'services.user_id', '=', 'providers.id' )
@@ -52,14 +53,15 @@ class AdminController extends Controller
 
                     ->editColumn('status', function($data){
                         if($data->status==1){
-                            return ' <button class="btn btn-success btn-sm">Accepted</button>';
-                        }elseif($data->status==0){
-                            return ' <button class="btn btn-secondary btn-sm">Pending</button>';
+                            return '<button class="btn btn-success btn-sm">Accepted</button>';
+                        }elseif($data->status==2){
+                            return '<button class="btn btn-secondary btn-sm">Pending</button>';
+                        }elseif($data->status==3){
+                            return '<button class="btn btn-danger btn-sm">Rejected</button>';
                         }
                     })
                     ->addColumn('action', function($row){
                         $btn = '<a href="/admin/viewProvider/'.$row->id.'" class="edit btn btn-primary btn-sm mr-3">View</a>';
-                        $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-success btn-sm mr-3">Edit</a>';
                         $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
                         return $btn;
                     })
@@ -79,9 +81,9 @@ class AdminController extends Controller
     {
         $data = tempProvider::find($id);
 
-        $data->status = true;
+        $data->status = 1;
         
-        if($data->status = true)
+        if($data->status == 1)
         {
             $approve = new Provider;
             $approve->name = $data->name;
@@ -129,6 +131,43 @@ class AdminController extends Controller
         return redirect('/admin/pendingList')->with('success', 'The account have been approved');
     }
 
+    public function rejectForm($id)
+    {
+        $data = tempProvider::find($id);
+        return view('admin.rejectProvider', compact('data'));
+    }
+
+    public function processReject(Request $request, $id)
+    {
+        $data = tempProvider::find($id);
+        $id = Auth()->user()->id;
+        $user_id = User::find($id);
+
+        $data->status=3;
+        $data->reason = $request->reason;
+
+        $data->save();
+        $details = [
+
+            'greeting' => 'Good Day Provider',
+
+            'body' => 'We are sorry to inform you that your registration have been rejected. Reason: '.$data->reason.'.',
+
+            'thanks' => 'Please check the information and try registering again',
+
+            'actionText' => 'Click here',
+
+            'actionURL' => url('/login'),
+
+            'id' => $user_id->id,
+
+        ];
+        Notification::send($user_id, new RejectAccountNotification($details));
+        return redirect('/admin/pendingList')->with('reject', 'Account have been rejected');
+        
+    }
+
+//manage service
     public function pendingService(Request $request)
     {
         // $pending=DB::table('temp_services')->select('*')->paginate(8);
@@ -146,7 +185,7 @@ class AdminController extends Controller
                     ->editColumn('status', function($data){
                         if($data->status==1){
                             return ' <button class="btn btn-success btn-sm">Approved</button>';
-                        }elseif($data->status==0){
+                        }elseif($data->status==2){
                             return ' <button class="btn btn-secondary btn-sm">Pending</button>';
                         }elseif($data->status==3){
                             return ' <button class="btn btn-danger btn-sm">Rejected</button>';
@@ -154,7 +193,7 @@ class AdminController extends Controller
                     })
                     ->addColumn('action', function($row){
 
-                        $btn = '<a href="/admin/viewProvider/'.$row->ts_id.'" class="edit btn btn-primary btn-sm mr-3">View</a>';
+                        $btn = '<a href="/admin/viewService/'.$row->ts_id.'" class="edit btn btn-primary btn-sm mr-3">View</a>';
                         $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-success btn-sm mr-3">Edit</a>';
                         $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
                         return $btn;
@@ -164,8 +203,12 @@ class AdminController extends Controller
                     ->make(true);
         }
         return view('admin.pendingService');
+    }
 
-
+    public function viewService($ts_id)
+    {
+        $service = tempService::find($ts_id);
+        return view('admin.viewService', compact('service'));
     }
 
     public function approveService(Request $request, $ts_id)
@@ -174,8 +217,8 @@ class AdminController extends Controller
                            ->select('temp_services.*', 'providers.email')
                            ->find($ts_id);
 
-        $data->status = true;
-        if($data->status = true)
+        $data->status = 1;
+        if($data->status == 1)
         {
             $approve = new Service;
             $approve->s_category = $data->ts_category;
@@ -202,7 +245,7 @@ class AdminController extends Controller
 
             'body' => 'Your service have been approved.',
 
-            'thanks' => 'Thank you for using Eco Tourism Setui as your platform to market your service',
+            'thanks' => 'Thank you for using Eco Tourism Management System as your platform to market your service',
 
             'actionText' => 'Click here',
 
@@ -213,7 +256,7 @@ class AdminController extends Controller
         ];
         Notification::send($data, new ServiceNotification($details));
 
-        return redirect('admin/pendingService')->with('message', 'Service have been approved');
+        return redirect('/admin/pendingService')->with('message', 'Service have been approved');
     }
 
     public function showRejectForm($ts_id)
@@ -228,7 +271,7 @@ class AdminController extends Controller
         $id = Auth()->user()->id;
         $user_id = User::find($id);
 
-        $data->status=false;
+        $data->status=3;
         $data->reason = $request->reason;
 
         $data->save();

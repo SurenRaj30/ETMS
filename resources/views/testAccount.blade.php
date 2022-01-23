@@ -42,11 +42,10 @@
 
                 <th>Contact No</th>
 
-                <th>Status</th>
+                <th style="width:5px;">Status</th>
 
-                <th>Action</th>
+                <th style="width:200px;">Action</th>
                
-
             </tr>
 
         </thead>

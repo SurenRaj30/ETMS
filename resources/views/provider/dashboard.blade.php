@@ -104,6 +104,9 @@
                 <div class="card-header">
                     Pending Service
                 </div>
+                @if(count($pl_service)<1)
+                <p class="p-2">No service pending for approval</p>
+                @else
                 <table class="table table-dark" style="text-align:center;">
                     <thead>
                       <tr>
@@ -124,14 +127,12 @@
                             <td><button class="btn btn-primary">Actions</button></td>
                         </tr>
                         @endforeach
+                        @endif
                     </tbody>
                   </table>
             </div>
         </div>
     </div>
 </div>
-
-
-
 @endsection
 

@@ -44,11 +44,10 @@
                 
                 <th width='155px'>Service Pricing (RM)</th>
 
-                <th width="50px">Status</th>
+                <th style="width:5px;">Status</th>
 
-                <th width='100px'>Action</th>
+                <th style="width:200px;">Action</th>
                
-
             </tr>
 
         </thead>

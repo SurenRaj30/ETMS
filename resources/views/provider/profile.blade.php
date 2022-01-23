@@ -2,11 +2,7 @@
 
 @section('content')
 
-<style>
-    #card-info{
-        background: #81D4FA;
-    }
-</style>
+
 
 @if (session()->has('message'))
 <div class="container">

@@ -58,18 +58,9 @@ class AdminController extends Controller
                         }
                     })
                     ->addColumn('action', function($row){
-                        $btn = '<div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Action
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="/admin/dashboard/">View</a>
-                          <a class="dropdown-item" href="/admin/approve/'.$row->id.'">Approve</a>
-                          <a class="dropdown-item" href="#">Reject</a>
-                          <a class="dropdown-item" href="#">Delete</a>
-                        </div>
-                      </div>';
-                     //    $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
+                        $btn = '<a href="/admin/viewProvider/'.$row->id.'" class="edit btn btn-primary btn-sm mr-3">View</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-success btn-sm mr-3">Edit</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
                         return $btn;
                     })
                     ->rawColumns(['action', 'status'])
@@ -163,19 +154,10 @@ class AdminController extends Controller
                     })
                     ->addColumn('action', function($row){
 
-                           $btn = '<div class="dropdown">
-                           <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                             Action
-                           </button>
-                           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                             <a class="dropdown-item" href="/admin/dashboard/">View</a>
-                             <a class="dropdown-item" href="/admin/approveService/'.$row->ts_id.'">Approve</a>
-                             <a class="dropdown-item" href="#">Reject</a>
-                             <a class="dropdown-item" href="#">Delete</a>
-                           </div>
-                         </div>';
-                        //    $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
-                           return $btn;
+                        $btn = '<a href="/admin/viewProvider/'.$row->ts_id.'" class="edit btn btn-primary btn-sm mr-3">View</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-success btn-sm mr-3">Edit</a>';
+                        $btn = $btn.'<a href="javascript:void(0)" class="edit btn btn-danger btn-sm">Delete</a>';
+                        return $btn;
                     })
                     ->rawColumns(['action', 'status'])
 
